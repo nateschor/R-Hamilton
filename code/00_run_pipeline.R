@@ -1,4 +1,5 @@
 
 pacman::p_load(tidyverse,
                tidytext,
-               sentimentr)
+               sentimentr,
+               topicmodels)
