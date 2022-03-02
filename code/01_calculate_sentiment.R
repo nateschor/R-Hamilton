@@ -2,9 +2,6 @@
 df_raw <- read_csv("data/raw/ham_lyrics.csv") %>% 
   glimpse()
 
-df_sentimentr_sentiment %>% 
-  slice_min(sentiment, n = 10)
-
 df_song_order <- df_raw %>% 
   select(title) %>% 
   distinct() %>% 
@@ -32,6 +29,10 @@ df_sentimentr_sentiment <- df_raw %>%
   summarize(
     sentimentr_sentiment = sum(sentiment)
   )
+
+
+df_sentimentr_sentiment %>% 
+  slice_min(sentimentr_sentiment, n = 10)
 
 df_tokenized <- df_raw %>% 
   left_join(., df_song_order, by = "title") %>% 
