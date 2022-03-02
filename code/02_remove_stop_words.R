@@ -17,3 +17,7 @@ df_onix_filtered <- df_tokenized %>%
 df_snowball_filter <- df_tokenized %>% 
   anti_join(., df_snowball_stop_words, by = "word")
 
+df_all_lexicons_filtered <- df_tokenized %>% 
+  anti_join(., stop_words, by = "word")
+
+write_csv(df_all_lexicons_filtered, "data/intermediate/tokenized_and_stop_words_removed.csv")
