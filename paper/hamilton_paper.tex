@@ -1,0 +1,81 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{natbib}
+
+\usepackage{graphicx}
+\graphicspath{ {figures/} }
+
+\title{Text Analysis of \emph{Hamilton}}
+\author{Nathan Schor}
+\date{March 13, 2022}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\listoffigures
+
+\section{Introduction}
+
+Using \cite{Silge2022}
+
+
+
+
+\section{Literature Review}
+
+
+
+\section{Data}
+
+
+
+\section{Research Design and Modeling Methods}
+
+\section{Results}
+
+\begin{figure}[h]
+    \caption{Sentiment Analysis by preprocessing group. \label{fig:sentiment}}
+    \centering
+    \includegraphics[width=0.2\paperwidth]{sentiment_by_stopwords.png}
+\end{figure}
+
+
+
+\section{Analysis and Interpretation}
+
+\begin{table}
+\caption{tf-idf by character}
+\label{tab:tfidf}
+\input{tables/speaker_tfidf.tex}
+\end{table}
+
+\section{Conclusions}
+
+\bibliography{references}
+\bibliographystyle{apalike}
+
+\section{Math Mode}
+
+$ \alpha \rightarrow \Rightarrow \exists \forall $
+$ \acute{e} $
+
+$ \hat{a} , \acute{a} , \bar{a} , \dot{a} , \breve{a} ,
+\check{a} , \grave{a} , \vec{a} , \ddot{a} , \tilde{a} $
+
+$hello^2$ $hello_2$ $hello_{world}$ 
+
+$\frac{topline}{bottomline}$
+
+\begin{equation}
+\int_0^\infty e^{-x^2} dx=\frac{\sqrt{\pi}}{2}
+\end{equation}
+
+\begin{equation}
+\underbrace{a+\overbrace{b+\cdots}^{{}=t}+z}
+_{\mathrm{total}} ~~
+a+{\overbrace{b+\cdots}}^{126}+z
+\label{eq:TooComplex}
+\end{equation}
+
+\end{document}
