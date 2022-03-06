@@ -2,7 +2,8 @@
 pacman::p_load(tidyverse,
                tidytext,
                sentimentr,
-               topicmodels)
+               topicmodels,
+               kableExtra)
 
 source("code/01_calculate_sentiment.R")
 source("code/02_remove_stop_words.R")

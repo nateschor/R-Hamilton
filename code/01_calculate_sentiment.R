@@ -107,15 +107,15 @@ ggplot(df_sentiment, aes(x = song_number, y = Sentiment, color = `Sentiment Sour
   geom_point() +
   theme_minimal()
 
-ggplot(df_sentiment, aes(x = song_number, y = Sentiment)) +
+p_sentiment <- ggplot(df_sentiment, aes(x = song_number, y = Sentiment)) +
   geom_line() +
   geom_hline(color = "red", yintercept = 0) +
   geom_point() +
-  facet_wrap(~ `Sentiment Source`, ncol = 1) +
+  facet_wrap(~ `Sentiment Source`, ncol = 1, scales = "free_y") +
   theme_minimal() +
   labs(x = "Song Number")
   
-  
+ggsave(plot = p_sentiment, filename = "paper/figures/sentiment_by_stopwords.png")  
 
 df_sentiment %>% 
   group_by(`Sentiment Source`) %>% 
