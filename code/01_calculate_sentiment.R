@@ -2,6 +2,17 @@
 df_raw <- read_csv("data/raw/ham_lyrics.csv") %>% 
   glimpse()
 
+set.seed(1234)
+
+df_raw %>% 
+  sample_n(5) %>% 
+  mutate(
+    entry = row_number()
+  ) %>% 
+  select(entry, everything()) %>% 
+  kable(., escape = TRUE, format = "latex") %>% 
+  save_kable(., file = "paper/tables/example_raw_data.tex")
+
 df_song_order <- df_raw %>% 
   select(title) %>% 
   distinct() %>% 
