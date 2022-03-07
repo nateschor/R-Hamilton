@@ -1,6 +1,8 @@
 \documentclass{article}
+\usepackage{setspace}
 \usepackage[utf8]{inputenc}
 \usepackage{natbib}
+\usepackage{url}
 
 \usepackage{graphicx}
 \graphicspath{ {figures/} }
@@ -9,6 +11,7 @@
 \author{Nathan Schor}
 \date{March 13, 2022}
 
+\doublespacing
 \begin{document}
 
 \maketitle
@@ -16,6 +19,8 @@
 \listoffigures
 
 \section{Introduction}
+
+The purpose of this research is to investigate the role of different sets of stop words and tokenization schemes in natural language processing (NLP) applied to the lyrics of the musical \emph{Hamilton}. We experiment with how four different sources of stop words and tokenizing at the word vs. sentence level affects sentiment analysis, term frequency-inverse document frequency (\emph{tf-idf}), topic modeling, and a chat bot. We begin by examining how sentiment changes throughout the musical and which pair of songs has the largest shift in sentiment. Next, we use \emph{tf-idf} to identify the most important word for each speaker. After, we see if the topic model is able to identify the speaker based on their words. Lastly, we develop a chat bot that is able to answer questions on a corpus that contains \emph{Hamilton's} wikipedia page augmented with results from this analysis. 
 
 Using \cite{Silge2022}
 
@@ -27,6 +32,14 @@ Using \cite{Silge2022}
 
 
 \section{Data}
+
+The data is obtained from the website \cite{Kaggle2019}. It contains the entirety of the musical in a csv file with 3,634 rows and 3 columns. The \emph{lines} column gives the line that is spoken. The \emph{speaker} column gives the names of the people speaking (can be more than one character singing at the same time). \emph{Title} gives the name of the song. 5 random rows of the data are shown in \ref{tab:example}
+
+\begin{table}
+\caption{Example of the \emph{Hamilton} dataset.}
+\label{tab:example}
+\input{tables/example_raw_data.tex}
+\end{table}
 
 
 
