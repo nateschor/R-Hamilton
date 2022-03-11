@@ -154,8 +154,13 @@ Query 4 is the most interesting. In a literal sense, the query does not explicit
 
 The last query highlights a limitation of the cosine similarity approach. The bot relies too heavily on the word "opening" and returns irrelevant results. A more sophisticated bot would understand that a necessary (but not sufficient) response would contain a time component e.g. "The show opened \textbf{6 years} ago. It would also identify phrases that serve the same purpose as "opening" such as "started", "began", "premiered", and "first shown". 
 
-
 \section{Conclusions}
+
+Often times, the most exciting parts of doing research are building models and generating informative tables and figures. However, the vast majority of time is spent in data acquisition, EDA, and data processing. This is especially true in NLP. Not only is each corpus different, but each use case with the same corpus is different. We need to take the time to make sure we truly understand the data we are working with so that we can feed useful information into our models. As the quote goes, "Garbage in, garbage out."
+
+This project highlighted for me the importance of curating a corpus-specific stop word list. Off-the-shelf stop words can be a nice start, but the probability that the list was curated with your specific use case in mind is close to 0. The same is true for sentiment. 
+
+The chat bot showed me that something useful can be built with even with a relatively little amount of code. However, the amount of work necessary to see incremental improvement increases sharply as the chat bot gets better and better. Alternative methods like BERT would likely have processed a better chat bot and is something I would like to explore in future work. 
 
 \bibliography{references}
 \bibliographystyle{apalike}
