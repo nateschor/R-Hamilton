@@ -29,17 +29,29 @@ Using \cite{Silge2022}
 
 \section{Literature Review}
 
-
-
 \section{Data}
 
-The data is obtained from the website \cite{Kaggle2019}. It contains the entirety of the musical in a csv file with 3,634 rows and 3 columns. The \emph{lines} column gives the line that is spoken. The \emph{speaker} column gives the names of the people speaking (can be more than one character singing at the same time). \emph{Title} gives the name of the song. 5 random rows of the data are shown in \ref{tab:example}
+The main dataset is obtained from the website \cite{Kaggle2019}. It contains the entirety of the musical in a csv file with 3,634 rows and 3 columns. The \emph{lines} column gives the line that is spoken. The \emph{speaker} column gives the names of the people speaking (can be more than one character singing at the same time). \emph{Title} gives the name of the song. 5 random rows of the data are shown in \ref{tab:example}. The main corpus for the chat bot is \cite{Wiki}.
 
 \begin{table}
 \caption{Example of the \emph{Hamilton} dataset.}
 \label{tab:example}
 \input{tables/example_raw_data.tex}
 \end{table}
+
+\subsection{Stop Words}
+Three sources are used to obtain the list of stop words. They are the SMART lexicon from \cite{Lewis2004}, snowball from \cite{snowball}, and onix.
+
+\subsection{Sentiment}
+
+Three lexicons are used to obtain sentiment. They are the AFINN dataset from \cite{nielsen11}, the nrc dataset from INSERT HERE, and the bing dataset from INSERT HERE.
+
+AFINN assigns words an integer value in $\{-5, -4, ..., 4, 5\}$ with -5 having the most negative sentiment and 5 having the most positive sentiment. Swear words/insults have -5, words like "superb" or "breathtaking" are 5, and "some kind" is 0. There are 2,477 terms. 
+
+nrc assigns each of its 13,875 words to 1 of 8 emotional categories. For the purpose of this analysis, only words in the "positive" or "negative" emotion category are retained. 
+
+
+
 
 
 
@@ -68,27 +80,5 @@ The data is obtained from the website \cite{Kaggle2019}. It contains the entiret
 \bibliography{references}
 \bibliographystyle{apalike}
 
-\section{Math Mode}
-
-$ \alpha \rightarrow \Rightarrow \exists \forall $
-$ \acute{e} $
-
-$ \hat{a} , \acute{a} , \bar{a} , \dot{a} , \breve{a} ,
-\check{a} , \grave{a} , \vec{a} , \ddot{a} , \tilde{a} $
-
-$hello^2$ $hello_2$ $hello_{world}$ 
-
-$\frac{topline}{bottomline}$
-
-\begin{equation}
-\int_0^\infty e^{-x^2} dx=\frac{\sqrt{\pi}}{2}
-\end{equation}
-
-\begin{equation}
-\underbrace{a+\overbrace{b+\cdots}^{{}=t}+z}
-_{\mathrm{total}} ~~
-a+{\overbrace{b+\cdots}}^{126}+z
-\label{eq:TooComplex}
-\end{equation}
 
 \end{document}
