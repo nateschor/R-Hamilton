@@ -118,13 +118,19 @@ ggplot(df_sentiment, aes(x = song_number, y = Sentiment, color = `Sentiment Sour
   geom_point() +
   theme_minimal()
 
+df_sentiment <- df_sentiment %>% 
+  left_join(., df_song_order, by = "song_number")
+
 p_sentiment <- ggplot(df_sentiment, aes(x = song_number, y = Sentiment)) +
   geom_line() +
   geom_hline(color = "red", yintercept = 0) +
   geom_point() +
   facet_wrap(~ `Sentiment Source`, ncol = 1, scales = "free_y") +
   theme_minimal() +
-  labs(x = "Song Number")
+  labs(x = "Song Number") +
+  geom_text(df_sentiment %>% filter(song_number %in% c(10, 11, 23)),
+             aes(label = title))
+  
   
 ggsave(plot = p_sentiment, filename = "paper/figures/sentiment_by_stopwords.png")  
 
