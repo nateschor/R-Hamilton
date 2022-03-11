@@ -4,6 +4,8 @@
 \usepackage{natbib}
 \usepackage{url}
 \usepackage{indentfirst} 
+\usepackage{hyperref}
+\usepackage{xcolor}
 
 \usepackage{graphicx}
 \graphicspath{ {figures/} }
@@ -31,6 +33,8 @@ Using \cite{Silge2022}
 \section{Literature Review}
 
 \section{Data}
+
+\subsection{Corpus}
 
 The main dataset is obtained from the website \cite{Kaggle2019}. It contains the entirety of the musical in a csv file with 3,634 rows and 3 columns. The \emph{lines} column gives the line that is spoken. The \emph{speaker} column gives the names of the people speaking (can be more than one character singing at the same time). \emph{Title} gives the name of the song. 5 random rows of the data are shown in \ref{tab:example}. The main corpus for the chat bot is \cite{Wiki}.
 
@@ -68,6 +72,7 @@ The \emph{Hamilton} lyrics were first tokenized into words and normalized to low
 The \emph{sentimentr} package helps to overcome some of these shortcomings. It tokenizes words as the sentence level rather than at the word level. This additional context can help to assign the correct overall sentiment to a sentence since its sentiment is not necessarily the sum of its individual tokens. 
 
 \subsection{TF-IDF}
+\label{section:tf-idf}
 
 \emph{tf-idf} is comprised of two parts: term frequency \emph{tf} and inverse document frequency \emph{idf}. The idea is that "important" words are captured by the seemingly contradictory idea that important words are both frequent and rare. A word's term-frequency is the number of times the word appears in the document divided by total number of words in the document (this is a way to control for the size of the document). The word's inverse document frequency is the natural logarithm of the number of documents in the corpus divided by the number of documents in the corpus that contain that word. The idea is that a common word such as "the" will have a high term frequency, but is not necessarily important or informative. However, "the" will have a low inverse document frequency because it is likely that every single document in the corpus will contain the word "the". Using \emph{tf-idf} helps to balance these two by multiplying them together. Thus, a word with a high \emph{tf-idf} both occurs frequently in a given document, but is rare in the corpus as a whole. 
 
@@ -92,8 +97,9 @@ The final portion of this project creates a chat bot that can answer questions a
 
 Cosine similarity measures the "distance" between two quantities by computing the angle $\theta$ between them. Each token is plotted as a vector using its \emph{tf-idf}. As we see from the formula $cos(\theta_{token1, token2}) = \frac {token1 \cdot token2}{||token1|| \cdot ||token2||}$, the cosine similarity for two vectors is between -1 and 1. Two identical vectors will have a cosine similarity of 1. The chat bot only returns results for queries that have a cosine similarity of at least 0 with another sentence in the corpus. 
 
-
 \section{Results}
+
+Figure \ref{fig:sentiment} shows how sentiment changes over the course of the musical. The song number (1-45) is displayed on the x-axis. The y-axis shows the sentiment. Notice that the scale between sentiment datasets can differ; for example, sentiment for the AFINN dataset is between -50 and 50, while sentiment from \emph{sentimentr} is between -10 and 20. The important aspect is not the absolute value of the sentiment, but the direction (positive or negative) and a song's sentiment value relative to other songs using the same sentiment dataset. 
 
 \begin{figure}[h]
     \caption{Sentiment analysis by sentiment dictionary. \label{fig:sentiment}}
@@ -101,15 +107,53 @@ Cosine similarity measures the "distance" between two quantities by computing th
     \includegraphics[width=0.2\paperwidth]{sentiment_by_stopwords.png}
 \end{figure}
 
+Table \ref{tab:tfidf} displays the word with the largest \emph{tf-idf} for each speaker. The SMART, snowball, and onix columns show had those respective stop word dictionaries applied to the data. The "All Lexicons" column had all 3 stop word dictionaries applied, and "All Words" did not remove any stop words. Speakers who appear multiple times had ties for their most important word in at least 1 of the 5 processing coluns. For example, Lafayette's most important word when any kind of stop word processing is used is "onarchy", but without stop word removal his most important word is "oui". Similarly to section \ref{section:tf-idf}, a speaker is defined as someone who is the only person singing a given line. This removes ambiguity over which speaker is singing a line. 
+
+\begin{table}
+\caption{Tf-idf by speaker}
+\label{tab:tfidf}
+\input{tables/speaker_tfidf.tex}
+\end{table}
+
+In Figure \ref{fig:topic_model} we have a topic model. The y-axis shows 10 terms for each topic. On the x-axis is $\beta$, which is the probability that the given term one generated from their assigned topic. For example, the term "sir" has a .02 probability of being generated from topic 1. Notice that terms (such as "sir" can overlap between topics. This seems reasonable given that all of the "topics" are speakers in the same play.
+
+\begin{figure}[h]
+    \caption{Topic model generated with lines from Hamilton, Eliza, and Washington. \label{fig:topic_model}}
+    \centering
+    \includegraphics[width=0.2\paperwidth]{topic_model.png}
+\end{figure}
+
+An example of the chat bot's output is show in Figure \ref{fig:chat_bot}. The text that is generated at the beginning of each conversation ("\emph{Don't Throw Away Your Shot to ask me questions about Hamilton! Type them in the box below:}") is italicized. The user's question is in \textbf{bold} and the chat bot's response is colored. A \textcolor{green}{green} response indicates that the chat bot answered well, a \textcolor{yellow}{yellow} response means that the response was on the right track but not quite correct, and \textcolor{red}{red} means the response was unsatisfactory. 
+
+\begin{figure}[h]
+    \caption{Example output from 5 queries fed to the chat bot. \label{fig:chat_bot}}
+    \centering
+    \includegraphics[width=0.2\paperwidth]{chat_bot_output.png}
+\end{figure}
 
 
 \section{Analysis and Interpretation}
 
-\begin{table}
-\caption{tf-idf by character}
-\label{tab:tfidf}
-\input{tables/speaker_tfidf.tex}
-\end{table}
+\subsection{Sentiment}
+
+Thoughtfully selecting a sentiment dataset is important to the results. Each of the sentiments in Figure \ref{fig:sentiment} have large swings in sentiment up until song 11 (\emph{Satisfied}), after which the sentiment has lower variance. All of graphs identify \emph{Satisfied} as one of the most positive songs and \emph{Helpless} (song 10) as one of the most negative songs and show that Act I ends on an extremely positive note with \emph{Non-Stop} (song 23). However, AFINN and \emph{sentimentr} identify the final song as having negative sentiment while nrc and bing classify the song as overall positive. There are a number of songs where the datasets diverge in classifying the song's valence. Thus, sentiment is conditional on the dataset used.
+
+\subsection{TF-IDF}
+
+Similarly, it is important to carefully construct a list of stop words that are \emph{corpus specific}. For example, in Figure \ref{tab:tfidf} "sir" could reasonably be considered a stop word. It is interesting how changing the stop word preprocessing step affects the speaker's most important word. For example, Burr's most important words are "room" and "immigrant". "room" is an inward looking term for Burr, reflecting his desire to be in the "room" when decisions are being made and to have a seat at the table. "immigrant" is an outward looking term, reflecting his complicated relationship with Hamitlon--who Burr often refers to as the "immigrant." It's also noteworthy that \emph{tf-idf} identifies the "catch phrase" for a number of the speakers: "satisfied" for Angelica, "goodbye" for Washington, "yes" for Maria Reynolds, and "enough" for Eliza.  
+
+\subsection{Topic Model}
+
+The topic model in Figure \ref{fig:topic_model} was able to produce reasonable terms for each of the three speakers from which the topics were generated (Hamilton, Eliza, and Washington). Topic 1 seems to be about Hamilton--Hamilton is fixated on the concept of time and speaks frequently with his son (Phillip), Jefferson, Burr, and Eliza. Topic 2 appears to identify Washington. Washington talks frequently with Hamilton and is heavily involved with the Revolutionary War and the fighting. To Hamilton's dismay, Washington refers to Hamilton as "son" (note that "son" appears in both the "Hamilton Topic" and the "Washington Topic" despite having a slightly different meaning). Eliza is the speaker identified in Topic 3. The term "helpless" is the title of one of her main songs and one of her catch phrases. She often speaks with Hamilton about "life" and unfortunately has to say "goodbye" to both her son Phillip and to Hamilton when they are each killed in duels. This topic modeling experiment illustrates that it has the potential to be used in situations where the number of topics is not known \emph{a priori} as a way of summarizing text.
+
+\subsection{Chat Bot}
+
+In Figure \ref{fig:chat_bot}, we see that the chat bot performs well on 3 queries, decently on 1 query, and poorly on the final query. A more sophisticated chat bot would be able to answer the question \textbf{"Who shoots Hamilton?"} with just the correct answer, "Burr", rather than providing all of the unnecessary context that is present in the Wikipedia document about the characters who mourn Hamilton. In query 3, we see that the chat bot correctly retrieves the relevant information for a query that is targeting the dataset augmented with the results from Figure \ref{fig:sentiment}. It seems plausible that a non-technical user would use the term "mood" rather than "sentiment", and we see that the chat bot has no problem retrieving the key sentence. 
+
+Query 4 is the most interesting. In a literal sense, the query does not explicitly answer the user's question; the question does not ask about Eliza's pregnancy or her request to Hamilton. However, the chat bot does (perhaps unintentionally) offer a profound response to the age-old question: \emph{"What is the meaing of life?"}. The answer touches on the importance of family, as well as slowing down and taking things one at a time and being happy with what they do have instead of focusing on what they do not. This example illustrates that a chat bot which can only retrieve text rather than generate text certainly has limitations, it has the potential to use its corpus in unexpected ways to produce interesting results.
+
+The last query highlights a limitation of the cosine similarity approach. The bot relies too heavily on the word "opening" and returns irrelevant results. A more sophisticated bot would understand that a necessary (but not sufficient) response would contain a time component e.g. "The show opened \textbf{6 years} ago. It would also identify phrases that serve the same purpose as "opening" such as "started", "began", "premiered", and "first shown". 
+
 
 \section{Conclusions}
 
