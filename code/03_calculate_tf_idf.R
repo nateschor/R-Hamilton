@@ -29,8 +29,7 @@ df_raw %>%
 
 v_speakers <- df_raw %>% 
   count(speaker, sort = TRUE) %>% 
-  filter(
-    str_detect(speaker, "^[A-Za-z]+$"),
+  filter(str_detect(speaker, "^[A-Za-z]+$"),
          n > 10) %>% 
   pull(speaker)
 
