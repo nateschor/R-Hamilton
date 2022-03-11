@@ -3,6 +3,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{natbib}
 \usepackage{url}
+\usepackage{indentfirst} 
 
 \usepackage{graphicx}
 \graphicspath{ {figures/} }
@@ -40,7 +41,8 @@ The main dataset is obtained from the website \cite{Kaggle2019}. It contains the
 \end{table}
 
 \subsection{Stop Words}
-Three sources are used to obtain the list of stop words. They are the SMART lexicon from \cite{Lewis2004}, snowball from \cite{snowball}, and onix.
+
+Three sources are used to obtain the list of stop words. They are the SMART lexicon from \cite{Lewis2004}, snowball from \cite{snowball}, and onix. SMART contains 571 stop words, snowball has 174 stop words, and onix has 404
 
 \subsection{Sentiment}
 
@@ -48,19 +50,53 @@ Three lexicons are used to obtain sentiment. They are the AFINN dataset from \ci
 
 AFINN assigns words an integer value in $\{-5, -4, ..., 4, 5\}$ with -5 having the most negative sentiment and 5 having the most positive sentiment. Swear words/insults have -5, words like "superb" or "breathtaking" are 5, and "some kind" is 0. There are 2,477 terms. 
 
-nrc assigns each of its 13,875 words to 1 of 8 emotional categories. For the purpose of this analysis, only words in the "positive" or "negative" emotion category are retained. 
+The nrc dataset assigns each of its 13,875 words to 1 of 8 emotional categories. For the purpose of this analysis, only words in the "positive" or "negative" emotion category are retained. 
 
-
-
-
+The only sentiment dataset ready for off-the-shelf use is the bing dataset. It classifies 6,786 terms as having either positive sentiment or negative sentiment. It is worth noting that roughly 70\% of the terms are negative, so negative sentiment words are over-represented. 
 
 
 \section{Research Design and Modeling Methods}
 
+The 4 main areas of investigation were analyzing mood via sentiment analysis, investigating the most important words for speakers using \emph{tf-idf}, seeing if we could "uncover" the speaker using topic models, and creating a chat bot to answer general questions about the play as well as information from the first 3 parts. Each of these are discussed in turn.
+
+\subsection{Sentiment Analysis}
+
+The two questions for this section are how much does differing the source of word sentiment affect the "time series" of the play's sentiment, and which song \emph{s} has the greatest mood shift as $max(Sentiment_{s} - Sentiment_{s - 1})$ for $s = 2, 3, ..., S - 1, S$ ($s - 1$ is not defined for $s = 0$).
+
+The \emph{Hamilton} lyrics were first tokenized into words and normalized to lower case. A song's sentiment was calculated $Sentiment_{s} = \sum_{w = 1}^{W}w$ where \emph{W} is the total number of words in song \emph{s}. This approach has a few major limitations. One is that a song's sentiment is not necessarily the sum of its parts. For example, \emph{It's Quiet Uptown} starts off with the death of Hamilton's son and has very negative sentiment. The end of the song has a positive sentiment as Hamilton and Eliza rekindle their marriage. This simple counting fails to capture the mood shift that transpires during the song. Furthermore, tokenizing at the word level does not capture the impact of negative modifiers. For example, the sentence "I was not happy with the show" should have negative sentiment, but the term "happy" will count as positive sentiment.
+
+The \emph{sentimentr} package helps to overcome some of these shortcomings. It tokenizes words as the sentence level rather than at the word level. This additional context can help to assign the correct overall sentiment to a sentence since its sentiment is not necessarily the sum of its individual tokens. 
+
+\subsection{TF-IDF}
+
+\emph{tf-idf} is comprised of two parts: term frequency \emph{tf} and inverse document frequency \emph{idf}. The idea is that "important" words are captured by the seemingly contradictory idea that important words are both frequent and rare. A word's term-frequency is the number of times the word appears in the document divided by total number of words in the document (this is a way to control for the size of the document). The word's inverse document frequency is the natural logarithm of the number of documents in the corpus divided by the number of documents in the corpus that contain that word. The idea is that a common word such as "the" will have a high term frequency, but is not necessarily important or informative. However, "the" will have a low inverse document frequency because it is likely that every single document in the corpus will contain the word "the". Using \emph{tf-idf} helps to balance these two by multiplying them together. Thus, a word with a high \emph{tf-idf} both occurs frequently in a given document, but is rare in the corpus as a whole. 
+
+We use \emph{tf-idf} as the metric to determine which are the most important words for a given speaker. For this analysis, we define a speaker as a character who has 10 or more solo lines. In the musical, many characters are singing simultaneously. In the dataset, it is challenging to parse out which words are attributed to each speaker since a list of speakers can be given for the same line. Thus we only look at lines where a speaker was the only singer in this analysis (which introduces some bias since there could be important information lost). 
+
+\subsection{Topic Modeling}
+
+Topic modeling is an unsupervised learning method that seeks to group documents into k similar documents, or topics. Since it is unsupervised, there is no loss function that can be used to optimize k since we do not have a "true" value. One of the most common algorithms for topic modeling is Latent Dirichlet Allocation (LDA) that treaks every document as being comprised of multiple topics, and every topic being comprised of multiple words. LDA estimates both of these quantities simultaneously. In this project, we look at the solo lines song by Hamilton, Eliza, and Washington. We see if we can recover words that uniquely identify these characters. Thus, the true k is 3, and we see if the topic model is able to identify the 3 "topics".
+
+\subsection{Chat Bot}
+
+The final portion of this project creates a chat bot that can answer questions about the \emph{Hamilton} Wikipedia page and on the previous 3 subsections. We do this using the following NLP pipeline:
+\begin{singlespace}
+\begin{enumerate}
+ \item Convert all strings to lower case
+ \item Tokenize the data at the sentence level
+ \item Perform lemmitization
+ \item Calculate the \emph{tf-idf} for each token
+ \item Return the entry from the corpus that has the largest cosine similarity with the query. 
+\end{enumerate}
+\end{singlespace}
+
+Cosine similarity measures the "distance" between two quantities by computing the angle $\theta$ between them. Each token is plotted as a vector using its \emph{tf-idf}. As we see from the formula $cos(\theta_{token1, token2}) = \frac {token1 \cdot token2}{||token1|| \cdot ||token2||}$, the cosine similarity for two vectors is between -1 and 1. Two identical vectors will have a cosine similarity of 1. The chat bot only returns results for queries that have a cosine similarity of at least 0 with another sentence in the corpus. 
+
+
 \section{Results}
 
 \begin{figure}[h]
-    \caption{Sentiment Analysis by preprocessing group. \label{fig:sentiment}}
+    \caption{Sentiment analysis by sentiment dictionary. \label{fig:sentiment}}
     \centering
     \includegraphics[width=0.2\paperwidth]{sentiment_by_stopwords.png}
 \end{figure}
