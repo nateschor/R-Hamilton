@@ -90,9 +90,13 @@ df_tfidf <- list(df_SMART_tfidf, df_snowball_tfidf, df_onix_tfidf, df_all_lexico
   ungroup() %>% 
   filter(number %in% 1:2) %>% 
   select(Speaker = speaker, starts_with("word"), starts_with("All")) %>% 
-  rename_with(.cols = starts_with("word"), .fn = ~ str_remove_all(., "word_"))
+  rename_with(.cols = starts_with("word"), .fn = ~ str_remove_all(., "word_")) %>% 
+  mutate(
+    Speaker = str_to_title(Speaker)
+  )
 
 kable(df_tfidf, escape = TRUE, format = "latex") %>% 
+  row_spec(0, bold = TRUE) %>% 
   save_kable(., file = "paper/tables/speaker_tfidf.tex")
 
 # create table of most important words by speaker comparing how it changes with the different stop word removals and without removing stopwords  

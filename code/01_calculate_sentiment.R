@@ -10,7 +10,20 @@ df_raw %>%
     entry = row_number()
   ) %>% 
   select(entry, everything()) %>% 
+  rename(
+    Entry = entry,
+    Title = title,
+    Speaker = speaker,
+    Lines = lines
+  ) %>% 
+  mutate(
+    Speaker = str_to_title(Speaker),
+    Lines = li
+  ) %>% 
   kable(., escape = TRUE, format = "latex") %>% 
+  row_spec(0, bold = TRUE) %>% 
+  # kable_styling(latex_options = "striped") %>% 
+  column_spec(., column = 4, width = "6cm") %>%
   save_kable(., file = "paper/tables/example_raw_data.tex")
 
 df_song_order <- df_raw %>% 
@@ -128,7 +141,7 @@ p_sentiment <- ggplot(df_sentiment, aes(x = song_number, y = Sentiment)) +
   facet_wrap(~ `Sentiment Source`, ncol = 1, scales = "free_y") +
   theme_minimal() +
   labs(x = "Song Number") +
-  geom_text(df_sentiment %>% filter(song_number %in% c(10, 11, 23)),
+  geom_text_repel(data = df_sentiment %>% filter(song_number %in% c(10, 11, 23)),
              aes(label = title))
   
   

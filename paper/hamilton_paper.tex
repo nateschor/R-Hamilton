@@ -6,6 +6,23 @@
 \usepackage{indentfirst} 
 \usepackage{hyperref}
 \usepackage{xcolor}
+\usepackage{float}
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage[utf8]{inputenc}
+\usepackage{makecell}
+\usepackage{xcolor}
 
 \usepackage{graphicx}
 \graphicspath{ {figures/} }
@@ -39,7 +56,7 @@ Using \cite{Silge2022}
 The main dataset is obtained from the website \cite{Kaggle2019}. It contains the entirety of the musical in a csv file with 3,634 rows and 3 columns. The \emph{lines} column gives the line that is spoken. The \emph{speaker} column gives the names of the people speaking (can be more than one character singing at the same time). \emph{Title} gives the name of the song. 5 random rows of the data are shown in \ref{tab:example}. The main corpus for the chat bot is \cite{Wiki}.
 
 \begin{table}
-\caption{Example of the \emph{Hamilton} dataset.}
+\caption{Five rows from the \emph{Hamilton} dataset.}
 \label{tab:example}
 \input{tables/example_raw_data.tex}
 \end{table}
@@ -60,6 +77,16 @@ The only sentiment dataset ready for off-the-shelf use is the bing dataset. It c
 
 
 \section{Research Design and Modeling Methods}
+
+\subsection{Ontology}
+
+I began by thinking about which aspects of \emph{Hamilton} would be interest to analyze using NLP tools. To structure my thinking, I constructed an ontology. The key pieces of the musical are its songs and actors. Within songs, I was curious how the mood changed throughout the duration of the play. For the actors, I was interested in if there were particular words of phrases that could summarize a character's personality or that would uniquely identify that character. Figure \ref{fig:ontology} shows the ontology I created using INTERSET PROTEGE. It served as my starting point for which kind of NLP questions to tackle. 
+
+\begin{figure}[h]
+    \caption{Ontology for \emph{Hamilton}. \label{fig:ontology}}
+    \centering
+    \includegraphics[width=0.7\paperwidth, scale=1.25]{ontology.png}
+\end{figure}
 
 The 4 main areas of investigation were analyzing mood via sentiment analysis, investigating the most important words for speakers using \emph{tf-idf}, seeing if we could "uncover" the speaker using topic models, and creating a chat bot to answer general questions about the play as well as information from the first 3 parts. Each of these are discussed in turn.
 
@@ -104,13 +131,13 @@ Figure \ref{fig:sentiment} shows how sentiment changes over the course of the mu
 \begin{figure}[h]
     \caption{Sentiment analysis by sentiment dictionary. \label{fig:sentiment}}
     \centering
-    \includegraphics[width=0.2\paperwidth]{sentiment_by_stopwords.png}
+    \includegraphics[width=0.5\paperwidth, scale=1]{sentiment_by_stopwords.png}
 \end{figure}
 
 Table \ref{tab:tfidf} displays the word with the largest \emph{tf-idf} for each speaker. The SMART, snowball, and onix columns show had those respective stop word dictionaries applied to the data. The "All Lexicons" column had all 3 stop word dictionaries applied, and "All Words" did not remove any stop words. Speakers who appear multiple times had ties for their most important word in at least 1 of the 5 processing coluns. For example, Lafayette's most important word when any kind of stop word processing is used is "onarchy", but without stop word removal his most important word is "oui". Similarly to section \ref{section:tf-idf}, a speaker is defined as someone who is the only person singing a given line. This removes ambiguity over which speaker is singing a line. 
 
 \begin{table}
-\caption{Tf-idf by speaker}
+\caption{Speaker \emph{tf-idf} by stop word lexicon.}
 \label{tab:tfidf}
 \input{tables/speaker_tfidf.tex}
 \end{table}
@@ -118,9 +145,9 @@ Table \ref{tab:tfidf} displays the word with the largest \emph{tf-idf} for each 
 In Figure \ref{fig:topic_model} we have a topic model. The y-axis shows 10 terms for each topic. On the x-axis is $\beta$, which is the probability that the given term one generated from their assigned topic. For example, the term "sir" has a .02 probability of being generated from topic 1. Notice that terms (such as "sir" can overlap between topics. This seems reasonable given that all of the "topics" are speakers in the same play.
 
 \begin{figure}[h]
-    \caption{Topic model generated with lines from Hamilton, Eliza, and Washington. \label{fig:topic_model}}
+    \caption{Topic model generated with lines from Hamilton, Washington, and Eliza. \label{fig:topic_model}}
     \centering
-    \includegraphics[width=0.2\paperwidth]{topic_model.png}
+    \includegraphics[width=0.7\paperwidth]{topic_model.png}
 \end{figure}
 
 An example of the chat bot's output is show in Figure \ref{fig:chat_bot}. The text that is generated at the beginning of each conversation ("\emph{Don't Throw Away Your Shot to ask me questions about Hamilton! Type them in the box below:}") is italicized. The user's question is in \textbf{bold} and the chat bot's response is colored. A \textcolor{green}{green} response indicates that the chat bot answered well, a \textcolor{yellow}{yellow} response means that the response was on the right track but not quite correct, and \textcolor{red}{red} means the response was unsatisfactory. 
@@ -128,7 +155,7 @@ An example of the chat bot's output is show in Figure \ref{fig:chat_bot}. The te
 \begin{figure}[h]
     \caption{Example output from 5 queries fed to the chat bot. \label{fig:chat_bot}}
     \centering
-    \includegraphics[width=0.2\paperwidth]{chat_bot_output.png}
+    \includegraphics[width=0.7\paperwidth]{chat_bot_output.png}
 \end{figure}
 
 
