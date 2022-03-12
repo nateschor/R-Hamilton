@@ -26,7 +26,11 @@ Plot_Topics <- function(topic_model) {
     geom_col(show.legend = FALSE) +
     facet_wrap(~ topic, scales = "free") +
     scale_y_reordered() + 
-    theme_minimal()
+    theme_minimal() +
+    labs(
+      x = expression(beta),
+      y = "Term"
+    )
   
   
 }
@@ -39,10 +43,13 @@ df_tokenized %>%
   Run_LDA(., 3) %>% 
   Plot_Topics()
 
-df_tokenized %>% 
+p_topic_model <- df_tokenized %>% 
   filter(str_detect(speaker, "^HAMILTON$|^ELIZA$|^WASHINGTON$")) %>% 
   Run_LDA(., 3) %>% 
   Plot_Topics()
+
+ggsave(plot = p_topic_model, 
+       filename = "paper/figures/topic_model.png")
 
 df_tokenized %>% 
   filter(str_detect(speaker, "^HAMILTON$|^ELIZA$|^KING GEORGE$")) %>% 

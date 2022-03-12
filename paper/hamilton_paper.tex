@@ -35,12 +35,13 @@
 \begin{document}
 
 \maketitle
+\begin{singlespace}
 \tableofcontents
-\listoffigures
+\end{singlespace}
 
 \section{Introduction}
 
-The purpose of this research is to investigate the role of different sets of stop words and tokenization schemes in natural language processing (NLP) applied to the lyrics of the musical \emph{Hamilton}. We experiment with how four different sources of stop words and tokenizing at the word vs. sentence level affects sentiment analysis, term frequency-inverse document frequency (\emph{tf-idf}), topic modeling, and a chat bot. We begin by examining how sentiment changes throughout the musical and which pair of songs has the largest shift in sentiment. Next, we use \emph{tf-idf} to identify the most important word for each speaker. After, we see if the topic model is able to identify the speaker based on their words. Lastly, we develop a chat bot that is able to answer questions on a corpus that contains \emph{Hamilton's} wikipedia page augmented with results from this analysis. 
+The purpose of this research is apply natural language processing (NLP) to the lyrics of the musical \emph{Hamilton}. We construct an ontology for \emph{Hamilton}. As part of the analysis, we experiment with three different sources of stop words, four different sentiment lexicons, and tokenizing at the word vs. sentence level. Term frequency-inverse document frequency (\emph{tf-idf}) is used to identify the most important terms for each character, a topic model is created to see if it can identify characters based on phrases most likely to belong to them, and we build a chat bot that can answer general questions about the musical and our analysis. We begin by building an ontology. Next, we examine how sentiment changes throughout the musical. Next, we use \emph{tf-idf} to identify the most important word for each speaker. After, we see if the topic model is able to identify the speaker based on their words. Lastly, we develop a chat bot that is able to answer questions on a corpus that contains \emph{Hamilton's} Wikipedia page augmented with results from this analysis. 
 
 Using \cite{Silge2022}
 
@@ -53,7 +54,7 @@ Using \cite{Silge2022}
 
 \subsection{Corpus}
 
-The main dataset is obtained from the website \cite{Kaggle2019}. It contains the entirety of the musical in a csv file with 3,634 rows and 3 columns. The \emph{lines} column gives the line that is spoken. The \emph{speaker} column gives the names of the people speaking (can be more than one character singing at the same time). \emph{Title} gives the name of the song. 5 random rows of the data are shown in \ref{tab:example}. The main corpus for the chat bot is \cite{Wiki}.
+The main dataset is obtained from the website \cite{Kaggle2019}. It contains the entirety of the musical in a csv file with 3,634 rows and 3 columns. The \emph{Lines} column gives the line that is spoken. The \emph{Speaker} column gives the names of the people speaking (there can be more than one character singing at the same time). \emph{Title} gives the name of the song. 5 random rows of the data are shown in Table \ref{tab:example}. The main corpus for the chat bot is \cite{Wiki}.
 
 \begin{table}
 \caption{Five rows from the \emph{Hamilton} dataset.}
@@ -63,7 +64,7 @@ The main dataset is obtained from the website \cite{Kaggle2019}. It contains the
 
 \subsection{Stop Words}
 
-Three sources are used to obtain the list of stop words. They are the SMART lexicon from \cite{Lewis2004}, snowball from \cite{snowball}, and onix. SMART contains 571 stop words, snowball has 174 stop words, and onix has 404
+Three sources are used to obtain the list of stop words. They are the SMART lexicon from \cite{Lewis2004}, snowball from \cite{snowball}, and onix. SMART contains 571 stop words, snowball has 174 stop words, and onix has 404 stop words.
 
 \subsection{Sentiment}
 
@@ -80,7 +81,7 @@ The only sentiment dataset ready for off-the-shelf use is the bing dataset. It c
 
 \subsection{Ontology}
 
-I began by thinking about which aspects of \emph{Hamilton} would be interest to analyze using NLP tools. To structure my thinking, I constructed an ontology. The key pieces of the musical are its songs and actors. Within songs, I was curious how the mood changed throughout the duration of the play. For the actors, I was interested in if there were particular words of phrases that could summarize a character's personality or that would uniquely identify that character. Figure \ref{fig:ontology} shows the ontology I created using INTERSET PROTEGE. It served as my starting point for which kind of NLP questions to tackle. 
+I began by thinking about which aspects of \emph{Hamilton} would be interesting to analyze using NLP tools. To structure my thinking, I constructed an ontology. The key pieces of the musical are its songs and actors. Within songs, I was curious how the mood changed throughout the duration of the play. For the actors, I was interested in analyzing whether were particular words or phrases could summarize a character's behavior. Figure \ref{fig:ontology} shows the ontology I created using INTERSET PROTEGE. It served as my starting point for which kind of NLP questions to tackle. 
 
 \begin{figure}[h]
     \caption{Ontology for \emph{Hamilton}. \label{fig:ontology}}
@@ -88,13 +89,13 @@ I began by thinking about which aspects of \emph{Hamilton} would be interest to 
     \includegraphics[width=0.7\paperwidth, scale=1.25]{ontology.png}
 \end{figure}
 
-The 4 main areas of investigation were analyzing mood via sentiment analysis, investigating the most important words for speakers using \emph{tf-idf}, seeing if we could "uncover" the speaker using topic models, and creating a chat bot to answer general questions about the play as well as information from the first 3 parts. Each of these are discussed in turn.
+The 4 main areas of investigation were analyzing mood via sentiment analysis, investigating the most important words for speakers using \emph{tf-idf}, seeing if we could ``uncover" the speaker using topic models, and creating a chat bot to answer general questions about the play as well as information from the first 3 parts. Each of these are discussed in turn.
 
 \subsection{Sentiment Analysis}
 
-The two questions for this section are how much does differing the source of word sentiment affect the "time series" of the play's sentiment, and which song \emph{s} has the greatest mood shift as $max(Sentiment_{s} - Sentiment_{s - 1})$ for $s = 2, 3, ..., S - 1, S$ ($s - 1$ is not defined for $s = 0$).
+The two questions for this section are how much does differing the source of word sentiment affect the "time series" of the play's sentiment, and which song \emph{s} has the greatest mood shift, defined as $max(Sentiment_{s} - Sentiment_{s - 1})$ for $s = \{2, 3, ..., S - 1, S\}$ ($s - 1$ is not defined for $s = 1$).
 
-The \emph{Hamilton} lyrics were first tokenized into words and normalized to lower case. A song's sentiment was calculated $Sentiment_{s} = \sum_{w = 1}^{W}w$ where \emph{W} is the total number of words in song \emph{s}. This approach has a few major limitations. One is that a song's sentiment is not necessarily the sum of its parts. For example, \emph{It's Quiet Uptown} starts off with the death of Hamilton's son and has very negative sentiment. The end of the song has a positive sentiment as Hamilton and Eliza rekindle their marriage. This simple counting fails to capture the mood shift that transpires during the song. Furthermore, tokenizing at the word level does not capture the impact of negative modifiers. For example, the sentence "I was not happy with the show" should have negative sentiment, but the term "happy" will count as positive sentiment.
+The \emph{Hamilton} lyrics were first tokenized into words and normalized to lower case. A song's sentiment was calculated as $Sentiment_{s} = \sum_{w = 1}^{W}w$ where \emph{W} is the total number of words in song \emph{s}. This approach has a few major limitations. One is that a song's sentiment is not necessarily the sum of its parts. For example, \emph{It's Quiet Uptown} starts off with the death of Hamilton's son and has very negative sentiment. The end of the song has a positive sentiment as Hamilton and Eliza rekindle their marriage. This simple counting fails to capture the mood shift that transpires during the song. Furthermore, tokenizing at the word level does not capture the impact of negative modifiers. For example, the sentence ``I was not happy with the show" should have negative sentiment, but the term ``happy" will count as positive sentiment.
 
 The \emph{sentimentr} package helps to overcome some of these shortcomings. It tokenizes words as the sentence level rather than at the word level. This additional context can help to assign the correct overall sentiment to a sentence since its sentiment is not necessarily the sum of its individual tokens. 
 
@@ -188,6 +189,8 @@ Often times, the most exciting parts of doing research are building models and g
 This project highlighted for me the importance of curating a corpus-specific stop word list. Off-the-shelf stop words can be a nice start, but the probability that the list was curated with your specific use case in mind is close to 0. The same is true for sentiment. 
 
 The chat bot showed me that something useful can be built with even with a relatively little amount of code. However, the amount of work necessary to see incremental improvement increases sharply as the chat bot gets better and better. Alternative methods like BERT would likely have processed a better chat bot and is something I would like to explore in future work. 
+
+\section{References}
 
 \bibliography{references}
 \bibliographystyle{apalike}
