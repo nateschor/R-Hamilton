@@ -3,6 +3,7 @@ pacman::p_load(tidyverse,
                tidytext,
                sentimentr,
                topicmodels,
+               ggrepel,
                kableExtra)
 
 source("code/01_calculate_sentiment.R")
