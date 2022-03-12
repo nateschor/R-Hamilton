@@ -92,8 +92,11 @@ df_tfidf <- list(df_SMART_tfidf, df_snowball_tfidf, df_onix_tfidf, df_all_lexico
   select(Speaker = speaker, starts_with("word"), starts_with("All")) %>% 
   rename_with(.cols = starts_with("word"), .fn = ~ str_remove_all(., "word_")) %>% 
   mutate(
-    Speaker = str_to_title(Speaker)
-  )
+    Speaker = str_to_title(Speaker),
+    Entry = row_number()
+  ) %>% 
+  select(Entry, everything())
+  
 
 kable(df_tfidf, escape = TRUE, format = "latex") %>% 
   row_spec(0, bold = TRUE) %>% 
