@@ -37,12 +37,6 @@ Plot_Topics <- function(topic_model) {
 
 map(5:10, ~ Run_LDA(df_tokenized, .) %>% Plot_Topics())
 
-df_tokenized %>% 
-  filter(str_detect(speaker, "HAMILTON|ELIZA|WASHINGTON"),
-         str_detect(speaker, "EXCEPT|EXEPT", negate = TRUE)) %>%
-  Run_LDA(., 3) %>% 
-  Plot_Topics()
-
 p_topic_model <- df_tokenized %>% 
   filter(str_detect(speaker, "^HAMILTON$|^ELIZA$|^WASHINGTON$")) %>% 
   Run_LDA(., 3) %>% 
@@ -68,6 +62,3 @@ df_tokenized %>%
   geom_col() +
   labs(x = "Log2 ratio of beta in topic 2 / topic 1", y = NULL) +
   theme_minimal()
-
-# load movie data and see if topic model can distinguish between movies and hamilton
-  
