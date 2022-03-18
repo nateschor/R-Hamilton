@@ -1,32 +1,4 @@
 
-df_SMART_filtered %>% 
-  count(song_number, word, sort = TRUE) %>% 
-  bind_tf_idf(word, song_number, n) %>% 
-  group_by(song_number) %>% 
-  slice_max(tf_idf, n = 1) %>% 
-  left_join(., df_song_order, by = "song_number") %>% 
-  select(title, word, tf_idf) %>% 
-  view()
-
-df_SMART_filtered %>% 
-  count(song_number, word, sort = TRUE) %>% 
-  bind_tf_idf(word, song_number, n) %>% 
-  slice_max(tf_idf, n = 5)
-
-df_raw %>% 
-  unnest_tokens(bigram, lines, token = "ngrams", n = 3) %>% 
-  separate(bigram, c("word1", "word2", "word3")) %>% 
-  filter(!word1 %in% stop_words$word, !word2 %in% stop_words$word, !word3 %in% stop_words$word) %>% 
-  unite(bigram, word1, word2, word3, sep = " ") %>% 
-  left_join(., df_song_order, by = "title") %>% 
-  count(song_number, bigram, sort = TRUE) %>% 
-  bind_tf_idf(bigram, song_number, n) %>% 
-  group_by(song_number) %>% 
-  slice_max(tf_idf, n = 1) %>% 
-  left_join(., df_song_order, by = "song_number") %>% 
-  select(title, bigram, tf_idf) %>% 
-  view()
-
 v_speakers <- df_raw %>% 
   count(speaker, sort = TRUE) %>% 
   filter(str_detect(speaker, "^[A-Za-z]+$"),
@@ -102,4 +74,3 @@ kable(df_tfidf, escape = TRUE, format = "latex") %>%
   row_spec(0, bold = TRUE) %>% 
   save_kable(., file = "paper/tables/speaker_tfidf.tex")
 
-# create table of most important words by speaker comparing how it changes with the different stop word removals and without removing stopwords  
