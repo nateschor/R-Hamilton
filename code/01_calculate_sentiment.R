@@ -4,7 +4,10 @@ df_raw <- read_csv("data/raw/ham_lyrics.csv") %>%
 
 set.seed(1234)
 
-df_raw %>% 
+
+# Data Sample -------------------------------------------------------------
+
+df_data_sample <- df_raw %>% 
   sample_n(5) %>% 
   mutate(
     entry = row_number()
@@ -18,13 +21,16 @@ df_raw %>%
   ) %>% 
   mutate(
     Speaker = str_to_title(Speaker),
-    Lines = li
-  ) %>% 
+  )
+
+kable_data_sample <- df_data_sample %>% 
   kable(., escape = TRUE, format = "latex") %>% 
   row_spec(0, bold = TRUE) %>% 
-  # kable_styling(latex_options = "striped") %>% 
   column_spec(., column = 4, width = "6cm") %>%
   save_kable(., file = "paper/tables/example_raw_data.tex")
+
+
+# Sentiment ---------------------------------------------------------------
 
 df_song_order <- df_raw %>% 
   select(title) %>% 
@@ -53,10 +59,6 @@ df_sentimentr_sentiment <- df_raw %>%
   summarize(
     sentimentr_sentiment = sum(sentiment)
   )
-
-
-df_sentimentr_sentiment %>% 
-  slice_min(sentimentr_sentiment, n = 10)
 
 df_tokenized <- df_raw %>% 
   left_join(., df_song_order, by = "title") %>% 
@@ -125,12 +127,6 @@ df_sentiment %>%
   group_by(`Sentiment Source`) %>% 
   slice_max(delta_sentiment, n = 2)
 
-ggplot(df_sentiment, aes(x = song_number, y = Sentiment, color = `Sentiment Source`)) +
-  geom_line() +
-  geom_hline(color = "red", yintercept = 0) +
-  geom_point() +
-  theme_minimal()
-
 df_sentiment <- df_sentiment %>% 
   left_join(., df_song_order, by = "song_number")
 
@@ -147,7 +143,3 @@ p_sentiment <- ggplot(df_sentiment, aes(x = song_number, y = Sentiment)) +
   
 ggsave(plot = p_sentiment, filename = "paper/figures/sentiment_by_stopwords.png")  
 
-df_sentiment %>% 
-  group_by(`Sentiment Source`) %>% 
-  slice_min(Sentiment, n = 5) %>% 
-  left_join(., df_song_order, by = "song_number")
